@@ -1,20 +1,20 @@
 # Control of Aircraft - Practical Work (Au511)
 
-## 📋 Project Overview
+## Project Overview
 
 This practical work implements a **longitudinal autopilot** for a MIRAGE III class fighter aircraft. The project covers the complete design of a cascaded control system with three feedback loops (q, γ, z) and includes flight management simulation.
 
 **Subject Number:** 82  
 **Operating Point:** Altitude = 21,230 ft | Mach = 0.95
 
-## 👥 Authors
+## Authors
 
 - LAUPIES Raphaël
 - CHARDON DU RANQUET Quentin
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ python3 "TP 1.py"
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 TP Au511/
@@ -62,7 +62,7 @@ TP Au511/
 
 ---
 
-## 📐 Operating Point (Subject 82)
+## Operating Point (Subject 82)
 
 | Parameter | Value |
 |-----------|-------|
@@ -88,7 +88,7 @@ TP Au511/
 
 ---
 
-## 🔧 Implementation Summary
+## Implementation Summary
 
 ### 1. Equilibrium Point Calculation
 Iterative algorithm to find α_eq, δm_eq, and Fpx_eq at the operating point.
@@ -129,7 +129,7 @@ Four-phase simulation:
 
 ---
 
-## 📊 Generated Outputs
+## Generated Outputs
 
 The script generates several PDF plots:
 - `stepalphaq.pdf` - Step response of α and q
@@ -143,7 +143,7 @@ Console outputs include:
 
 ---
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
 ### "No module named 'slycot'"
 This is optional. The sisotool calls are commented out, and all gains are pre-calculated.
@@ -156,7 +156,7 @@ Make sure to close each plot window to continue script execution.
 
 ---
 
-## 📚 References
+## References
 
 - Course: Au511 - Control of Aircraft
 - Instructor: Jean-Pierre NOUAILLE
@@ -165,6 +165,6 @@ Make sure to close each plot window to continue script execution.
 
 ---
 
-## 📝 License
+## License
 
-Academic project - ISAE-SUPAERO / ENSICA
+Academic project - IPSA A5 Au511
