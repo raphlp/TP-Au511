@@ -815,3 +815,107 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
+
+#%% 10) ALTERNATIVE FINAL FLARE - Page 38
+# =========================================
+# Instead of a step command for the final flare, 
+# use a ramp command and an exponential function
+# =========================================
+
+print("\n" + "="*70)
+print("ALTERNATIVE FINAL FLARE SIMULATIONS")
+print("="*70)
+
+# Common parameters for alternative flare
+z_start_flare = x_end_3[5]  # Altitude at end of descent
+z_target_flare = z_start_flare - 50  # Target altitude (50m below)
+duration_alt_flare = 40.0  # Duration for alternative flare
+
+# --- ALTERNATIVE 1: RAMP COMMAND ---
+print("\n--- Alternative 1: Ramp Command ---")
+
+t_ramp = np.linspace(0, duration_alt_flare, 400)
+# Ramp from current altitude to target altitude
+z_ramp = z_start_flare + (z_target_flare - z_start_flare) * (t_ramp / duration_alt_flare)
+
+# Initial condition (from end of descent phase)
+x0_ramp = np.append(x_end_3, x_end_3[5])
+
+# Simulate with ramp input
+resp_ramp = control.forced_response(sys_phase_z, T=t_ramp, U=z_ramp, X0=x0_ramp)
+
+# Extract altitude response
+z_resp_ramp = resp_ramp.states[5, :]
+gamma_resp_ramp = resp_ramp.states[1, :]
+
+print(f"  Initial altitude: {z_start_flare:.1f} m")
+print(f"  Final altitude (command): {z_target_flare:.1f} m")
+print(f"  Final altitude (response): {z_resp_ramp[-1]:.1f} m")
+
+
+# --- ALTERNATIVE 2: EXPONENTIAL COMMAND ---
+print("\n--- Alternative 2: Exponential Command ---")
+
+t_exp = np.linspace(0, duration_alt_flare, 400)
+# Exponential decay: z(t) = z_target + (z_start - z_target) * exp(-t/tau_exp)
+tau_exp = 10.0  # Time constant for exponential decay
+z_exp = z_target_flare + (z_start_flare - z_target_flare) * np.exp(-t_exp / tau_exp)
+
+# Initial condition
+x0_exp = np.append(x_end_3, x_end_3[5])
+
+# Simulate with exponential input
+resp_exp = control.forced_response(sys_phase_z, T=t_exp, U=z_exp, X0=x0_exp)
+
+# Extract responses
+z_resp_exp = resp_exp.states[5, :]
+gamma_resp_exp = resp_exp.states[1, :]
+
+print(f"  Exponential time constant: {tau_exp} s")
+print(f"  Final altitude (response): {z_resp_exp[-1]:.1f} m")
+
+
+# --- COMPARISON PLOT ---
+fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+
+# Left column: Ramp command
+axes[0, 0].plot(t_ramp, z_ramp, 'g--', lw=2, label='Command (ramp)')
+axes[0, 0].plot(t_ramp, z_resp_ramp, 'b-', lw=2, label='Response')
+axes[0, 0].set_ylabel('Altitude z (m)')
+axes[0, 0].set_title('Alternative Flare: RAMP Command')
+axes[0, 0].legend()
+axes[0, 0].grid(True)
+
+axes[1, 0].plot(t_ramp, gamma_resp_ramp * 180/np.pi, 'r-', lw=2)
+axes[1, 0].set_ylabel('Gamma (deg)')
+axes[1, 0].grid(True)
+
+axes[2, 0].plot(t_ramp, z_ramp - z_resp_ramp, 'm-', lw=2)
+axes[2, 0].set_ylabel('Tracking Error (m)')
+axes[2, 0].set_xlabel('Time (s)')
+axes[2, 0].grid(True)
+
+# Right column: Exponential command
+axes[0, 1].plot(t_exp, z_exp, 'g--', lw=2, label='Command (exp)')
+axes[0, 1].plot(t_exp, z_resp_exp, 'b-', lw=2, label='Response')
+axes[0, 1].set_ylabel('Altitude z (m)')
+axes[0, 1].set_title(f'Alternative Flare: EXPONENTIAL Command (τ={tau_exp}s)')
+axes[0, 1].legend()
+axes[0, 1].grid(True)
+
+axes[1, 1].plot(t_exp, gamma_resp_exp * 180/np.pi, 'r-', lw=2)
+axes[1, 1].set_ylabel('Gamma (deg)')
+axes[1, 1].grid(True)
+
+axes[2, 1].plot(t_exp, z_exp - z_resp_exp, 'm-', lw=2)
+axes[2, 1].set_ylabel('Tracking Error (m)')
+axes[2, 1].set_xlabel('Time (s)')
+axes[2, 1].grid(True)
+
+plt.suptitle('Alternative Final Flare Comparison: Ramp vs Exponential', fontsize=14)
+plt.tight_layout()
+plt.show()
+
+print("\n" + "="*70)
+print("TP COMPLETED - All sections implemented for Subject 82")
+print("="*70)
