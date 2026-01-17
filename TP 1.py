@@ -464,34 +464,37 @@ B_q6 = B * Kr
 A_gamma6 = A_q6 + B_q6 @ (Kgamma * C_gamma6)
 B_gamma6 = B_q6 * Kgamma
 
-# Plant: gamma_c -> z (no sensor)
+# %% Z feedback loop — CORRECTED VERSION
+
+# 1) Plant: gamma_c -> z (aircraft + q loop + gamma loop)
 Gz = control.ss(A_gamma6, B_gamma6, C_z6, 0)
 
-# Altimeter model (tau = 0.65s)
+# 2) Altimeter model (1st order sensor)
 tau_alt = 0.65
 H_alt = control.tf([1.0], [tau_alt, 1.0])
 
-# Plant including sensor
-Gz_for_siso = control.series(Gz, H_alt)
+# 3) Plant including sensor (z -> z_meas)
+Gz_measured = control.series(Gz, H_alt)
 
-# 2) Kz selection
+# 4) Altitude controller gain
 Kz = 0.001  # Subject 82
 
-# 3) Closed z loop
-G_cl = Kz * Gz
-sys_z_cl = control.feedback(G_cl, H_alt)
+# 5) CLOSED-LOOP on altitude ERROR: z_c - z_meas
+#    gamma_c = Kz * (z_c - z_meas)
+sys_z_cl = control.feedback(-Kz * Gz_measured, 1)
 
-# State space
+# 6) State-space form (for analysis & simulation)
 sys_z_cl_ss = control.ss(sys_z_cl)
+
 A_z = np.array(sys_z_cl_ss.A)
 B_z = np.array(sys_z_cl_ss.B)
 C_z = np.array(sys_z_cl_ss.C)
 D_z = np.array(sys_z_cl_ss.D)
 
-# 4) Analysis
+# 7) Poles and damping
 wn_z, zeta_z, poles_z = control.damp(sys_z_cl_ss)
 
-# --- 5) Step response z_c -> z -----------------------
+# --- 8) Step response z_c -> z -----------------------
 t = np.linspace(0, 80, 2000)
 t_step, z_resp = control.step_response(sys_z_cl_ss, t)
 
